@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TenmoClient.Models;
 using TenmoClient.Services;
+using TenmoServer.
 
 namespace TenmoClient
 {
@@ -73,7 +74,8 @@ namespace TenmoClient
 
             if (menuSelection == 1)
             {
-                // View your current balance
+                GetBalance(tenmoApiService.UserId);
+
             }
 
             if (menuSelection == 2)
