@@ -6,9 +6,10 @@ using TenmoServer.Models;
 
 namespace TenmoServer.DAO
 {
-    interface IAccountDao
+    public interface IAccountDao
     {
-        public decimal GetBalance(User user);
+        //public decimal GetBalance(int userId);
+        public Account GetAccount(int userId);
         //public decimal SendTransfer();
         //public decimal ReceiveTransfer();
 

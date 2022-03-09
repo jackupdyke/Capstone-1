@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using TenmoClient.Models;
+using TenmoServer.DAO;
 
 namespace TenmoClient.Services
 {
     public class TenmoConsoleService : ConsoleService
     {
+        
+        
         /************************************************************
             Print methods
         ************************************************************/

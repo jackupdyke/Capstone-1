@@ -10,15 +10,16 @@ namespace TenmoServer.DAO
     public class AccountSqlDao : IAccountDao
     {
         private readonly string connectionString;
+
         public AccountSqlDao(string dbConnectionString)
         {
             connectionString = dbConnectionString;
         }
-        public decimal GetBalance(User user)
+        public Account GetAccount(int userId)
         {
-            string sql = "SELECT balance FROM account WHERE user_id = @user_id";
-            int userId = user.UserId;
-            Account returnBalance = new Account();
+            string sql = "SELECT * FROM account WHERE user_id = @user_id";
+            
+            Account account = new Account();
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
@@ -31,7 +32,7 @@ namespace TenmoServer.DAO
 
                     if (reader.Read())
                     {
-                        returnBalance = GetAccountFromReader(reader);
+                        account = GetAccountFromReader(reader);
                     }
                 }
             }
@@ -40,7 +41,7 @@ namespace TenmoServer.DAO
                 throw;
             }
 
-            return returnBalance.Balance;
+            return account;
         }
         //public decimal ReceiveTransfer()
         //{
@@ -58,6 +59,7 @@ namespace TenmoServer.DAO
             {
                 Balance = Convert.ToDecimal(reader["balance"]),
                 AccountId = Convert.ToInt32(reader["account_id"]),
+                UserId = Convert.ToInt32(reader["user_id"]),
 
             };
 

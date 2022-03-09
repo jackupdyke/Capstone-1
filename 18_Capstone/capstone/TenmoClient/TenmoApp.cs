@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using TenmoClient.Models;
 using TenmoClient.Services;
-using TenmoServer.
+//using TenmoServer.DAO;
+//using TenmoServer.Models;
 
 namespace TenmoClient
 {
@@ -10,6 +11,8 @@ namespace TenmoClient
     {
         private readonly TenmoConsoleService console = new TenmoConsoleService();
         private readonly TenmoApiService tenmoApiService;
+        //private readonly string connectionstring;
+        //AccountSqlDao accountsqlDao;
 
         public TenmoApp(string apiUrl)
         {
@@ -74,8 +77,11 @@ namespace TenmoClient
 
             if (menuSelection == 1)
             {
-                GetBalance(tenmoApiService.UserId);
-
+                //ApiUser user = new ApiUser();
+                //user.UserId = tenmoApiService.UserId;
+                Console.WriteLine($"Your current account balance is: {tenmoApiService.GetAccount(tenmoApiService.UserId).Balance.ToString("C")} ");
+                Console.WriteLine("Press enter to continue");
+                Console.ReadLine();
             }
 
             if (menuSelection == 2)
