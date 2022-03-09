@@ -97,6 +97,7 @@ namespace TenmoClient
             if (menuSelection == 4)
             {
                 // Send TE bucks
+                Transfer();
             }
 
             if (menuSelection == 5)
@@ -166,5 +167,51 @@ namespace TenmoClient
             }
             console.Pause();
         }
+
+        private void Transfer()
+        {
+            List<ApiUser> users = tenmoApiService.GetUsers();
+
+            Console.WriteLine("|-------------- Users --------------|");
+            Console.WriteLine("|    Id | Username                  |");
+            Console.WriteLine("|-------+---------------------------|");
+            foreach (ApiUser item in users)
+            {
+                if (item.UserId != tenmoApiService.UserId)
+                {
+                    Console.WriteLine($"|{item.UserId}   | {item.Username.PadRight(26)}|");
+                }
+            }
+            Console.WriteLine("|-----------------------------------|");
+            Console.Write("Id of the user you are sending to[0]: ");
+            int userID = int.Parse(Console.ReadLine());
+            bool select = true;
+            decimal amountToTransfer = 0;
+            while (select)
+            {
+                Console.Write("Enter amount to send: ");
+                amountToTransfer = decimal.Parse(Console.ReadLine());
+                if (amountToTransfer <= 0)
+                {
+                    Console.WriteLine("Please enter a value greater than zero.");
+                    continue;
+                }
+                if (tenmoApiService.GetAccount(tenmoApiService.UserId).Balance < amountToTransfer)
+                {
+                    Console.WriteLine("Unable to transfer - Balance below request");
+                    continue;
+                }
+                break;
+            }
+             
+            decimal receiverAmount = tenmoApiService.ChangeBalance(amountToTransfer, userID);
+            decimal senderAmount = tenmoApiService.ChangeBalance(-(amountToTransfer), tenmoApiService.UserId);
+
+            Console.WriteLine(receiverAmount + senderAmount);
+
+            
+            
+        }   
+
     }
 }

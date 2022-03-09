@@ -12,6 +12,7 @@ namespace TenmoServer.DAO
         public Account GetAccount(int userId);
         //public decimal SendTransfer();
         //public decimal ReceiveTransfer();
+        public decimal ChangeBalance(decimal transferAmount, int accountId);
 
     }
 }

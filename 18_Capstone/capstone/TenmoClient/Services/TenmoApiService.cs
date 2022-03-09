@@ -32,6 +32,47 @@ namespace TenmoClient.Services
             }
         }
 
+        public List<ApiUser> GetUsers()
+        {
+            List<ApiUser> returnUsers = new List<ApiUser>();
+
+            RestRequest request = new RestRequest("https://localhost:44315/user");
+            IRestResponse <List<ApiUser>> response = client.Get<List<ApiUser>>(request);
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                throw new Exception("Error occurred - unable to reach server.");
+            }
+            else if (!response.IsSuccessful)
+            {
+                throw new Exception("Error occurred - received non-success response: " + (int)response.StatusCode);
+            }
+            else
+            {
+                return response.Data;
+            }
+
+        }
+
+        public Transfer ChangeBalance(Transfer transfer)
+        {
+            RestRequest request = new RestRequest($"https://localhost:44315/account/{transfer.UserId}");
+            request.AddJsonBody(transfer);
+            IRestResponse<Transfer> response = client.Put<Transfer>(request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                throw new Exception("Error occurred - unable to reach server.");
+            }
+            else if (!response.IsSuccessful)
+            {
+                throw new Exception("Error occurred - received non-success response: " + (int)response.StatusCode);
+            }
+            else
+            {
+                return response.Data;
+            }
+        }
+
         // Add methods to call api here...
 
 

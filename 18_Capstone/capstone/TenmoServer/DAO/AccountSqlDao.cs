@@ -43,6 +43,29 @@ namespace TenmoServer.DAO
 
             return account;
         }
+
+        public decimal ChangeBalance(decimal transferAmount, int accountId)
+        {
+            using(SqlConnection connection = new SqlConnection(connectionString))
+            {
+                decimal totalAmount = transferAmount + GetAccount(accountId).Balance;
+                connection.Open();
+                string sql = "UPDATE account SET balance = @amount WHERE account.account_id = @accountId;";
+                SqlCommand command = connection.CreateCommand();
+                command.CommandText = sql;
+                command.Parameters.AddWithValue("@amount", transferAmount);
+                command.Parameters.AddWithValue("@accountId", accountId);
+
+                command.ExecuteNonQuery();
+
+                return totalAmount;
+                
+
+            }
+            
+
+
+        }
         //public decimal ReceiveTransfer()
         //{
         //    throw new NotImplementedException();
