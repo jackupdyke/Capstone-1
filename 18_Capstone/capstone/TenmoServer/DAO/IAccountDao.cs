@@ -14,8 +14,8 @@ namespace TenmoServer.DAO
         //public decimal ReceiveTransfer();
         public void ChangeBalance(Transfer transfer);
 
-        public List<Transfer> GetTransfers(int accountId);
-
+        //public List<Transfer> GetTransfers(int accountId); original method
+        public List<Transfer> GetTransfers();
         public bool AddTransfer(Transfer transfer);
 
     }

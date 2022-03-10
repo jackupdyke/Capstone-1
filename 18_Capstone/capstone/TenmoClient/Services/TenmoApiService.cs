@@ -76,7 +76,7 @@ namespace TenmoClient.Services
             List<Transfer> transfers = new List<Transfer>();
 
             RestRequest request = new RestRequest("https://localhost:44315/transfer");
-            request.AddJsonBody(accountId);
+            //request.AddJsonBody(accountId);
             IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
 
             if (response.ResponseStatus != ResponseStatus.Completed)

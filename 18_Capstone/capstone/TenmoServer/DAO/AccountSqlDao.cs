@@ -85,19 +85,50 @@ namespace TenmoServer.DAO
 
 
         }
+        //original get transfers 
+        //public List<Transfer> GetTransfers(int accountId)
+        //{
+        //    List<Transfer> transfers = new List<Transfer>();
 
-        public List<Transfer> GetTransfers(int accountId)
+        //    using(SqlConnection conn = new SqlConnection(connectionString))
+        //    {
+        //        conn.Open();
+
+        //        string sqlTransfersList = "SELECT * FROM transfer WHERE account_from = @current_user OR account_to = @current_user";
+        //        SqlCommand cmd = new SqlCommand(sqlTransfersList, conn);
+
+        //        cmd.Parameters.AddWithValue("@current_user", accountId );
+
+        //        SqlDataReader reader = cmd.ExecuteReader();
+
+        //        while (reader.Read())
+        //        {
+        //            Transfer transfer = new Transfer();
+        //            transfer.AccountId = Convert.ToInt32(reader["account_from"]);
+        //            //transfer.Type = 
+        //            transfer.SecondAccountID = Convert.ToInt32(reader["account_to"]);
+        //            //transfer.Status = 
+        //            transfer.AmountToTransfer = Convert.ToDecimal(reader["amount"]);
+        //            transfer.TransferId = Convert.ToInt32(reader["transfer_id"]);
+        //        }
+
+                
+        //    }
+        //    return transfers;
+        //}
+
+        public List<Transfer> GetTransfers()
         {
             List<Transfer> transfers = new List<Transfer>();
 
-            using(SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
 
-                string sqlTransfersList = "SELECT * FROM transfer WHERE account_from = @current_user OR account_to = @current_user";
+                string sqlTransfersList = "SELECT * FROM transfer";
                 SqlCommand cmd = new SqlCommand(sqlTransfersList, conn);
 
-                cmd.Parameters.AddWithValue("@current_user", accountId );
+                
 
                 SqlDataReader reader = cmd.ExecuteReader();
 
@@ -110,9 +141,10 @@ namespace TenmoServer.DAO
                     //transfer.Status = 
                     transfer.AmountToTransfer = Convert.ToDecimal(reader["amount"]);
                     transfer.TransferId = Convert.ToInt32(reader["transfer_id"]);
+                    transfers.Add(transfer);
                 }
 
-                
+
             }
             return transfers;
         }

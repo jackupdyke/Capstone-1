@@ -20,22 +20,29 @@ namespace TenmoServer.Controllers
             this.accountDao = accountDao;
         }
 
+        //[HttpGet("{id}")]
+        //public ActionResult<List<Transfer>> GetTransfers(int accountId)
+        //{
+        //    List<Transfer> transfers = accountDao.GetTransfers(accountId);
+
+        //    if (transfers.Count == 0)
+        //    {
+        //        return NotFound();
+        //    }
+        //    else
+        //    {
+        //        return Ok(transfers);
+        //    }
+
+            
+
+        //}
+
         [HttpGet]
-        public ActionResult<List<Transfer>> GetTransfers(int accountId)
+        public ActionResult<List<Transfer>> GetTransfers()
         {
-            List<Transfer> transfers = accountDao.GetTransfers(accountId);
-
-            if (transfers.Count == 0)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return Ok(transfers);
-            }
-
-
-
+            List<Transfer> transfers = accountDao.GetTransfers();
+            return transfers;
         }
 
         [HttpPost]
