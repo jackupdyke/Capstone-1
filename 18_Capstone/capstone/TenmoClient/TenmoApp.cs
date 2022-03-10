@@ -225,10 +225,10 @@ namespace TenmoClient
             }
             Transfer transfer = new Transfer();
             transfer.AmountToTransfer = amountToTransfer;
-            transfer.SecondAccountID = receiverUserId;
-            transfer.AccountId = tenmoApiService.UserId;
+            transfer.SecondUserId = receiverUserId;
+            transfer.CurrentUserId = tenmoApiService.UserId;
             transfer.SecondBalance = tenmoApiService.GetAccount(receiverUserId).Balance;
-            transfer.Balance = tenmoApiService.GetAccount(transfer.AccountId).Balance;
+            transfer.Balance = tenmoApiService.GetAccount(transfer.CurrentUserId).Balance;
             tenmoApiService.ChangeBalance(transfer);
 
 
@@ -255,15 +255,15 @@ namespace TenmoClient
             {
                 string type = null;
                 string username = null;
-                if (item.AccountId == tenmoApiService.GetAccount(tenmoApiService.UserId).AccountId)
+                if (item.CurrentUserId == tenmoApiService.GetAccount(tenmoApiService.UserId).CurrentUserId)
                 {
                     type = "To: ";
-                    username = $"{item.SecondAccountID}";
+                    username = $"{item.SecondUserId}";
                 }
                 else
                 {
                     type = "From: ";
-                    username = $"{ item.AccountId}";
+                    username = $"{ item.CurrentUserId}";
 
                 }
                 Console.WriteLine($"{item.TransferId} {type} {username} {item.AmountToTransfer.ToString("c")} ");

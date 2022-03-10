@@ -8,8 +8,8 @@ namespace TenmoServer.Models
     public class Account: User
     {
         public decimal Balance { get; set; }
+        public int CurrentUserId { get; set; }
         public int AccountId { get; set; }
-        public int UserId { get; set; }
 
     }
 }

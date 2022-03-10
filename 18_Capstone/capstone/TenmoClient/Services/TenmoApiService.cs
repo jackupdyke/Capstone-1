@@ -55,7 +55,7 @@ namespace TenmoClient.Services
 
         public void ChangeBalance(Transfer transfer)
         {
-            RestRequest request = new RestRequest($"https://localhost:44315/account/{transfer.AccountId}");
+            RestRequest request = new RestRequest($"https://localhost:44315/account/{transfer.CurrentUserId}");
             request.AddJsonBody(transfer);
             IRestResponse response = client.Put(request);
 

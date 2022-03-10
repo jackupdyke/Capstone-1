@@ -7,7 +7,7 @@ namespace TenmoServer.Models
 {
     public class Transfer : Account
     {
-        public int SecondAccountID { get; set; }
+        public int SecondUserId { get; set; }
         //Status number meaning
         // 1 = Pending
         // 2 = Approved

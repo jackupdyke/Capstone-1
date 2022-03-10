@@ -7,8 +7,8 @@ namespace TenmoClient.Models
     public class Account
     {
         public decimal Balance { get; set; }
+        public int CurrentUserId { get; set; }
         public int AccountId { get; set; }
-        public int UserId { get; set; }
 
         
 
