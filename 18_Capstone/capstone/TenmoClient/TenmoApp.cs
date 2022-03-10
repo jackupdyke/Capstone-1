@@ -87,6 +87,7 @@ namespace TenmoClient
             if (menuSelection == 2)
             {
                 // View your past transfers
+                GetTransfers();
             }
 
             if (menuSelection == 3)
@@ -184,10 +185,29 @@ namespace TenmoClient
             }
             Console.WriteLine("|-----------------------------------|");
             Console.Write("Id of the user you are sending to[0]: ");
-            int userID = int.Parse(Console.ReadLine());
-            bool select = true;
+
+
+
+            //TODO check on user input for receiverUserId
+
+            int receiverUserId = 0;
+
+
+            while (true)
+            {
+                receiverUserId = int.Parse(Console.ReadLine());
+                if (receiverUserId == tenmoApiService.UserId)
+                {
+                    Console.WriteLine("Cannot transfer request to your own account.");
+                    continue;
+                }
+                break;
+            }
+            //TODO check on sender balance
+            //TODO make zero exit on current menu
+            //TODO check amountToTransfer is not blank
             decimal amountToTransfer = 0;
-            while (select)
+            while (true)
             {
                 Console.Write("Enter amount to send: ");
                 amountToTransfer = decimal.Parse(Console.ReadLine());
@@ -198,20 +218,60 @@ namespace TenmoClient
                 }
                 if (tenmoApiService.GetAccount(tenmoApiService.UserId).Balance < amountToTransfer)
                 {
-                    Console.WriteLine("Unable to transfer - Balance below request");
+                    Console.WriteLine("Unable to transfer - Balance below request.");
                     continue;
                 }
                 break;
             }
-             
-            decimal receiverAmount = tenmoApiService.ChangeBalance(amountToTransfer, userID);
-            decimal senderAmount = tenmoApiService.ChangeBalance(-(amountToTransfer), tenmoApiService.UserId);
+            Transfer transfer = new Transfer();
+            transfer.AmountToTransfer = amountToTransfer;
+            transfer.SecondAccountID = receiverUserId;
+            transfer.AccountId = tenmoApiService.UserId;
+            transfer.SecondBalance = tenmoApiService.GetAccount(receiverUserId).Balance;
+            transfer.Balance = tenmoApiService.GetAccount(transfer.AccountId).Balance;
+            tenmoApiService.ChangeBalance(transfer);
 
-            Console.WriteLine(receiverAmount + senderAmount);
 
-            
-            
-        }   
+            //TODO update transfer to take in accountID instead of UserId
+
+            Console.WriteLine("Transfer complete");
+            Console.WriteLine("Press enter to continue");
+            Console.ReadLine();
+
+
+
+
+        }
+        public void GetTransfers()
+        {
+            List<Transfer> transfers = tenmoApiService.GetTransfers(tenmoApiService.UserId);
+            Console.WriteLine("-------------------------------------------");
+            Console.WriteLine("Transfers");
+            Console.WriteLine("ID          From/To                 Amount");
+            Console.WriteLine("-------------------------------------------");
+
+
+            foreach (Transfer item in transfers)
+            {
+                string type = null;
+                string username = null;
+                if (item.AccountId == tenmoApiService.GetAccount(tenmoApiService.UserId).AccountId)
+                {
+                    type = "To: ";
+                    username = $"{item.SecondAccountID}";
+                }
+                else
+                {
+                    type = "From: ";
+                    username = $"{ item.AccountId}";
+
+                }
+                Console.WriteLine($"{item.TransferId} {type} {username} {item.AmountToTransfer.ToString("c")} ");
+            }
+            Console.WriteLine("---------");
+            Console.WriteLine("Please enter transfer ID to view details (0 to cancel): ");
+            Console.ReadLine();
+        }
 
     }
 }

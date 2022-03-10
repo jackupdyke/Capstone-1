@@ -44,27 +44,82 @@ namespace TenmoServer.DAO
             return account;
         }
 
-        public decimal ChangeBalance(decimal transferAmount, int accountId)
+        public void ChangeBalance(Transfer transfer)
         {
             using(SqlConnection connection = new SqlConnection(connectionString))
             {
-                decimal totalAmount = transferAmount + GetAccount(accountId).Balance;
+
+                //decimal totalAmount  = transfer.AmountToTransfer + GetAccount(transfer.AccountId).Balance;
                 connection.Open();
-                string sql = "UPDATE account SET balance = @amount WHERE account.account_id = @accountId;";
+                string sqlAccount = "UPDATE account SET balance = @amount WHERE account.user_id = @accountId;";
+                string sqlTransfer = "INSERT INTO dbo.transfer (account_from, account_to, transfer_type_id, transfer_status_id, amount) " +
+                    "VALUES (@account_from, @account_to, @transfer_type_id, @transfer_status_id, @amount);";
+
                 SqlCommand command = connection.CreateCommand();
-                command.CommandText = sql;
-                command.Parameters.AddWithValue("@amount", transferAmount);
-                command.Parameters.AddWithValue("@accountId", accountId);
+                command.CommandText = sqlAccount;
+                command.Parameters.AddWithValue("@amount", (transfer.Balance - transfer.AmountToTransfer));
+                command.Parameters.AddWithValue("@accountId", transfer.AccountId);
 
                 command.ExecuteNonQuery();
 
-                return totalAmount;
-                
+                command = connection.CreateCommand();
+                command.CommandText = sqlAccount;
+                command.Parameters.AddWithValue("@amount", (transfer.SecondBalance + transfer.AmountToTransfer));
+                command.Parameters.AddWithValue("@accountId", transfer.SecondAccountID);
+
+                command.ExecuteNonQuery();
+
+                command = connection.CreateCommand();
+                command.CommandText = sqlTransfer;
+                command.Parameters.AddWithValue("@account_from", transfer.AccountId);
+                command.Parameters.AddWithValue("@account_to", transfer.SecondAccountID);
+                command.Parameters.AddWithValue("@transfer_type_id", transfer.Type);
+                command.Parameters.AddWithValue("@transfer_status_id",transfer.Status );
+                command.Parameters.AddWithValue("@amount", transfer.AmountToTransfer);
+
+                command.ExecuteNonQuery();
+
 
             }
-            
 
 
+
+        }
+
+        public List<Transfer> GetTransfers(int accountId)
+        {
+            List<Transfer> transfers = new List<Transfer>();
+
+            using(SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                string sqlTransfersList = "SELECT * FROM transfer WHERE account_from = @current_user OR account_to = @current_user";
+                SqlCommand cmd = new SqlCommand(sqlTransfersList, conn);
+
+                cmd.Parameters.AddWithValue("@current_user", accountId );
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    Transfer transfer = new Transfer();
+                    transfer.AccountId = Convert.ToInt32(reader["account_from"]);
+                    //transfer.Type = 
+                    transfer.SecondAccountID = Convert.ToInt32(reader["account_to"]);
+                    //transfer.Status = 
+                    transfer.AmountToTransfer = Convert.ToDecimal(reader["amount"]);
+                    transfer.TransferId = Convert.ToInt32(reader["transfer_id"]);
+                }
+
+                
+            }
+            return transfers;
+        }
+
+        public bool AddTransfer(Transfer transfer)
+        {
+            return false;
         }
         //public decimal ReceiveTransfer()
         //{

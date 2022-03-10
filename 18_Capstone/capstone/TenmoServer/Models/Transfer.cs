@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace TenmoClient.Models
+namespace TenmoServer.Models
 {
     public class Transfer : Account
     {
-        
         public int SecondAccountID { get; set; }
         //Status number meaning
         // 1 = Pending
@@ -17,8 +17,10 @@ namespace TenmoClient.Models
         //1 = Request
         //2 = Send
         public int Type { get; set; } = 2;
+
         public decimal SecondBalance { get; set; }
         public decimal AmountToTransfer { get; set; }
         public int TransferId { get; set; }
     }
 }
+

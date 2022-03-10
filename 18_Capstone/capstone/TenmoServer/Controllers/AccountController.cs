@@ -34,11 +34,13 @@ namespace TenmoServer.Controllers
         //    return "value";
         //}
 
-        [HttpPut]
-        public ActionResult<Transfer> ChangeBalance(decimal totalAmount, int userId)
+        [HttpPut("{id}")]
+        public ActionResult ChangeBalance(Transfer transfer)
         {
-           decimal returnAmount = accountDao.ChangeBalance(totalAmount, userId);
-            return returnAmount;
+            
+            accountDao.ChangeBalance(transfer);
+
+            return Ok();
         }
 
         //// PUT api/<AccountController>/5

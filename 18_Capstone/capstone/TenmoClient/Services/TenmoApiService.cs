@@ -53,11 +53,31 @@ namespace TenmoClient.Services
 
         }
 
-        public Transfer ChangeBalance(Transfer transfer)
+        public void ChangeBalance(Transfer transfer)
         {
-            RestRequest request = new RestRequest($"https://localhost:44315/account/{transfer.UserId}");
+            RestRequest request = new RestRequest($"https://localhost:44315/account/{transfer.AccountId}");
             request.AddJsonBody(transfer);
-            IRestResponse<Transfer> response = client.Put<Transfer>(request);
+            IRestResponse response = client.Put(request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                throw new Exception("Error occurred - unable to reach server.");
+            }
+            else if (!response.IsSuccessful)
+            {
+                throw new Exception("Error occurred - received non-success response: " + (int)response.StatusCode);
+            }
+           
+            
+        }
+
+        public List<Transfer> GetTransfers(int accountId)
+        {
+            List<Transfer> transfers = new List<Transfer>();
+
+            RestRequest request = new RestRequest("https://localhost:44315/transfer");
+            request.AddJsonBody(accountId);
+            IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
 
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
