@@ -10,7 +10,7 @@ namespace TenmoClient.Models
         public int CurrentUserId { get; set; }
         public int AccountId { get; set; }
 
-        
+        public string UserName { get; set; }
 
 
     }

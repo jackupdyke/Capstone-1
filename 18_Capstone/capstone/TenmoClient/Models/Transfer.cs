@@ -20,5 +20,7 @@ namespace TenmoClient.Models
         public decimal SecondBalance { get; set; }
         public decimal AmountToTransfer { get; set; }
         public int TransferId { get; set; }
+        public int ReceiverAccountId { get; set; }
+        public string UserNameReceived { get; set; }
     }
 }

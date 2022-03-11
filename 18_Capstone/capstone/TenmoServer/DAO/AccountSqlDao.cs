@@ -71,8 +71,8 @@ namespace TenmoServer.DAO
 
                 command = connection.CreateCommand();
                 command.CommandText = sqlTransfer;
-                command.Parameters.AddWithValue("@account_from", 2001);
-                command.Parameters.AddWithValue("@account_to", 2002);
+                command.Parameters.AddWithValue("@account_from", transfer.AccountId);
+                command.Parameters.AddWithValue("@account_to", transfer.ReceiverAccountId);
                 command.Parameters.AddWithValue("@transfer_type_id", transfer.Type);
                 command.Parameters.AddWithValue("@transfer_status_id",transfer.Status );
                 command.Parameters.AddWithValue("@amount", transfer.AmountToTransfer);
@@ -125,7 +125,9 @@ namespace TenmoServer.DAO
             {
                 conn.Open();
 
-                string sqlTransfersList = "SELECT * FROM transfer";
+                string sqlTransfersList = "SELECT * FROM transfer JOIN account AS fromaccount ON " +
+                    "fromaccount.account_id = account_from JOIN account AS toaccount ON toaccount.account_id = account_to JOIN tenmo_user AS fromtenmo_user " +
+                    "ON fromtenmo_user.user_id = fromaccount.user_id JOIN tenmo_user AS totenmo_user ON totenmo_user.user_id = toaccount.user_id;";
                 SqlCommand cmd = new SqlCommand(sqlTransfersList, conn);
 
                 
@@ -135,12 +137,14 @@ namespace TenmoServer.DAO
                 while (reader.Read())
                 {
                     Transfer transfer = new Transfer();
-                    transfer.CurrentUserId = Convert.ToInt32(reader["account_from"]);
                     //transfer.Type = 
-                    transfer.SecondUserId = Convert.ToInt32(reader["account_to"]);
                     //transfer.Status = 
+                    transfer.SecondUserId = Convert.ToInt32(reader["toaccount.user_id"]);
                     transfer.AmountToTransfer = Convert.ToDecimal(reader["amount"]);
                     transfer.TransferId = Convert.ToInt32(reader["transfer_id"]);
+                    transfer.UserNameReceived = Convert.ToString(reader["totenmo_user.username"]);
+                    transfer.Username = Convert.ToString(reader["fromtenmo_user.username"]) ;
+                    transfer.CurrentUserId = Convert.ToInt32(reader["fromaccount.user_id"]);
                     transfers.Add(transfer);
                 }
 
@@ -168,8 +172,8 @@ namespace TenmoServer.DAO
             Account a = new Account()
             {
                 Balance = Convert.ToDecimal(reader["balance"]),
-                CurrentUserId = Convert.ToInt32(reader["account_id"]),
-                AccountId = Convert.ToInt32(reader["user_id"]),
+                AccountId = Convert.ToInt32(reader["account_id"]),
+                CurrentUserId = Convert.ToInt32(reader["user_id"]),
 
             };
 

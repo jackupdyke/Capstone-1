@@ -229,6 +229,8 @@ namespace TenmoClient
             transfer.CurrentUserId = tenmoApiService.UserId;
             transfer.SecondBalance = tenmoApiService.GetAccount(receiverUserId).Balance;
             transfer.Balance = tenmoApiService.GetAccount(transfer.CurrentUserId).Balance;
+            transfer.AccountId = tenmoApiService.GetAccount(transfer.CurrentUserId).AccountId;
+            transfer.ReceiverAccountId = tenmoApiService.GetAccount(transfer.SecondUserId).AccountId;
             tenmoApiService.ChangeBalance(transfer);
 
 
@@ -250,21 +252,22 @@ namespace TenmoClient
             Console.WriteLine("ID          From/To                 Amount");
             Console.WriteLine("-------------------------------------------");
 
+            //List<ApiUser> apiUsers = tenmoApiService.GetUsers();
 
             foreach (Transfer item in transfers)
             {
                 string type = null;
                 string username = null;
-                if (item.CurrentUserId == tenmoApiService.GetAccount(tenmoApiService.UserId).CurrentUserId)
+                if (item.CurrentUserId != tenmoApiService.UserId)
                 {
                     type = "To: ";
-                    username = $"{item.SecondUserId}";
+                    username = $"{item.UserNameReceived}";
                 }
                 else
                 {
                     type = "From: ";
-                    username = $"{ item.CurrentUserId}";
-
+                    username = $"{item.UserName}";
+                    
                 }
                 Console.WriteLine($"{item.TransferId} {type} {username} {item.AmountToTransfer.ToString("c")} ");
             }
