@@ -125,7 +125,7 @@ namespace TenmoServer.DAO
             {
                 conn.Open();
 
-                string sqlTransfersList = "SELECT * FROM transfer JOIN account AS fromaccount ON " +
+                string sqlTransfersList = "SELECT fromaccount.account_id faaccountid, toaccount.user_id toaccountid, totenmo_user.username tousername, fromtenmo_user.username fromusername, totenmo_user.user_id touserid, fromtenmo_user.user_id fromuserid, * FROM transfer JOIN account AS fromaccount ON " +
                     "fromaccount.account_id = account_from JOIN account AS toaccount ON toaccount.account_id = account_to JOIN tenmo_user AS fromtenmo_user " +
                     "ON fromtenmo_user.user_id = fromaccount.user_id JOIN tenmo_user AS totenmo_user ON totenmo_user.user_id = toaccount.user_id;";
                 SqlCommand cmd = new SqlCommand(sqlTransfersList, conn);
@@ -139,18 +139,48 @@ namespace TenmoServer.DAO
                     Transfer transfer = new Transfer();
                     //transfer.Type = 
                     //transfer.Status = 
-                    transfer.SecondUserId = Convert.ToInt32(reader["toaccount.user_id"]);
+                    transfer.CurrentUserId = Convert.ToInt32(reader["fromuserid"]);
+                    transfer.SecondUserId = Convert.ToInt32(reader["touserid"]);
                     transfer.AmountToTransfer = Convert.ToDecimal(reader["amount"]);
                     transfer.TransferId = Convert.ToInt32(reader["transfer_id"]);
-                    transfer.UserNameReceived = Convert.ToString(reader["totenmo_user.username"]);
-                    transfer.Username = Convert.ToString(reader["fromtenmo_user.username"]) ;
-                    transfer.CurrentUserId = Convert.ToInt32(reader["fromaccount.user_id"]);
+                    transfer.UserNameReceived = Convert.ToString(reader["tousername"]);
+                    transfer.UserNameFrom = Convert.ToString(reader["fromusername"]);
+                    transfer.AccountId = Convert.ToInt32(reader["faaccountid"]);
+                    transfer.ReceiverAccountId = Convert.ToInt32(reader["toaccountid"]);
                     transfers.Add(transfer);
                 }
 
 
             }
             return transfers;
+        }
+
+        public Transfer GetSpecificTransfer(int id)
+        {
+            Transfer transfer = new Transfer();
+            string sqlGetTransfer = "SELECT fromtu.username fromusername, totu.username tousername,  * FROM transfer JOIN account fa ON account_from = fa.account_id JOIN account ta " +
+                "ON account_to = ta.account_id JOIN tenmo_user totu ON totu.user_id = ta.user_id JOIN tenmo_user fromtu ON " +
+                "fromtu.user_id = fa.user_id WHERE transfer_id = @transfer_id; ";
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand(sqlGetTransfer, conn);
+                cmd.Parameters.AddWithValue("@transfer_id", id);
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                if(reader.Read())
+                {
+                    transfer.UserNameReceived = Convert.ToString(reader["tousername"]);
+                    transfer.UserNameFrom = Convert.ToString(reader["fromusername"]) ;
+                    transfer.TransferId = Convert.ToInt32(reader["transfer_id"]);
+                    transfer.AmountToTransfer = Convert.ToDecimal(reader["amount"]);
+                    transfer.Type = Convert.ToInt32(reader["transfer_type_id"]);
+                    transfer.Status = Convert.ToInt32(reader["transfer_status_id"]);
+
+                }
+            }
+                return transfer;
         }
 
         public bool AddTransfer(Transfer transfer)

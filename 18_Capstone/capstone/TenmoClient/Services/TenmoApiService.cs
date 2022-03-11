@@ -93,6 +93,27 @@ namespace TenmoClient.Services
             }
         }
 
+        public Transfer GetSpecificTransfer(int id)
+        {
+            string apiurl = $"https://localhost:44315/transfer/{id}";
+            RestRequest request = new RestRequest(apiurl);
+            IRestResponse <Transfer> response = client.Get<Transfer>(request);
+            //request.AddJsonBody(id);
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                throw new Exception("Error occurred - unable to reach server.");
+            }
+            else if (!response.IsSuccessful)
+            {
+                throw new Exception("Error occurred - received non-success response: " + (int)response.StatusCode);
+            }
+            else
+            {
+                return response.Data;
+            }
+
+        }
+
         // Add methods to call api here...
 
 

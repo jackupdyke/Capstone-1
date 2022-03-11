@@ -13,11 +13,11 @@ namespace TenmoClient
         private readonly TenmoApiService tenmoApiService;
         //private readonly string connectionstring;
         //AccountSqlDao accountsqlDao;
-
         public TenmoApp(string apiUrl)
         {
             tenmoApiService = new TenmoApiService(apiUrl);
         }
+        
 
         public void Run()
         {
@@ -258,22 +258,60 @@ namespace TenmoClient
             {
                 string type = null;
                 string username = null;
-                if (item.CurrentUserId != tenmoApiService.UserId)
+                if (item.CurrentUserId == tenmoApiService.UserId )
                 {
                     type = "To: ";
                     username = $"{item.UserNameReceived}";
+                    Console.WriteLine($"{item.TransferId} {type.PadLeft(14)} {username.PadRight(10)} {item.AmountToTransfer.ToString("c").PadLeft(10)} ");
                 }
-                else
+                else if(item.SecondUserId == tenmoApiService.UserId)
                 {
                     type = "From: ";
-                    username = $"{item.UserName}";
+                    username = $"{item.UserNameFrom}";
+                    Console.WriteLine($"{item.TransferId} {type.PadLeft(14)} {username.PadRight(10)} {item.AmountToTransfer.ToString("c").PadLeft(10)} ");
+                    
                     
                 }
-                Console.WriteLine($"{item.TransferId} {type} {username} {item.AmountToTransfer.ToString("c")} ");
             }
             Console.WriteLine("---------");
             Console.WriteLine("Please enter transfer ID to view details (0 to cancel): ");
+            int transferId = Convert.ToInt32(Console.ReadLine());
+            GetSpecificTransfer(transferId);
+
+        }
+
+        public void GetSpecificTransfer(int transferId)
+        {
+            Transfer transfer = tenmoApiService.GetSpecificTransfer(transferId);
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("Transfer Details");
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine($"Id: {transfer.TransferId}");
+            Console.WriteLine($"From: {transfer.UserNameFrom}");
+            Console.WriteLine($"To: {transfer.UserNameReceived}");
+            if (transfer.Type == 1)
+            {
+                Console.WriteLine("Type: Request");
+            }
+            else if (transfer.Type == 2)
+            {
+                Console.WriteLine("Type: Send");
+            }
+            if (transfer.Status == 1)
+            {
+                Console.WriteLine("Status: Pending");
+            }
+            else if(transfer.Status == 2)
+            {
+                Console.WriteLine($"Status: Approved");
+            }
+            else if(transfer.Status == 3)
+            {
+                Console.WriteLine("Status: Rejected");
+            }
+            Console.WriteLine($"Amount: {transfer.AmountToTransfer.ToString("c")}");
             Console.ReadLine();
+
         }
 
     }

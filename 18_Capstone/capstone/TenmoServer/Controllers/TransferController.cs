@@ -45,6 +45,13 @@ namespace TenmoServer.Controllers
             return transfers;
         }
 
+        [HttpGet("{id}")]
+        public ActionResult<Transfer> GetSpecificTransfer(int id)
+        {
+            Transfer transfer = accountDao.GetSpecificTransfer(id);
+            return Ok(transfer);
+        }
+
         [HttpPost]
         public ActionResult AddTransfer(Transfer transfer)
         {

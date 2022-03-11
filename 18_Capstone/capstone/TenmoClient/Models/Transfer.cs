@@ -22,5 +22,6 @@ namespace TenmoClient.Models
         public int TransferId { get; set; }
         public int ReceiverAccountId { get; set; }
         public string UserNameReceived { get; set; }
+        public string UserNameFrom { get; set; }
     }
 }
