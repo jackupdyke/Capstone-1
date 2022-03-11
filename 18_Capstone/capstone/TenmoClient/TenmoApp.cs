@@ -185,6 +185,7 @@ namespace TenmoClient
             {
                 string type = null;
                 string username = null;
+                //not getting into if statement to send the pending request details
                 if (item.SecondUserId == tenmoApiService.UserId && item.Status == 1)
                 {
                     

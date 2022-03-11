@@ -204,7 +204,7 @@ namespace TenmoServer.DAO
 
                 command.ExecuteNonQuery();
             }
-            return false;
+            return true;
 
         }
         private Account GetAccountFromReader(SqlDataReader reader)
