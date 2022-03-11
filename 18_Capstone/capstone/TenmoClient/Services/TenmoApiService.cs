@@ -71,6 +71,23 @@ namespace TenmoClient.Services
             
         }
 
+        public void AddPendingTransfer(Transfer transfer)
+        {
+            RestRequest request = new RestRequest($"https://localhost:44315/transfer");
+            request.AddJsonBody(transfer);
+            IRestResponse response = client.Put(request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                throw new Exception("Error occurred - unable to reach server.");
+            }
+            else if (!response.IsSuccessful)
+            {
+                throw new Exception("Error occurred - received non-success response: " + (int)response.StatusCode);
+            }
+
+        }
+
         public List<Transfer> GetTransfers(int accountId)
         {
             List<Transfer> transfers = new List<Transfer>();

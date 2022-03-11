@@ -53,9 +53,9 @@ namespace TenmoServer.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddTransfer(Transfer transfer)
+        public ActionResult AddPendingTransfer(Transfer transfer)
         {
-            bool result = accountDao.AddTransfer(transfer);
+            bool result = accountDao.AddPendingTransfer(transfer);
 
             if (result)
             {

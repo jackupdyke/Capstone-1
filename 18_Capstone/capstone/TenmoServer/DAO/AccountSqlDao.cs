@@ -183,20 +183,30 @@ namespace TenmoServer.DAO
                 return transfer;
         }
 
-        public bool AddTransfer(Transfer transfer)
+        public bool AddPendingTransfer(Transfer transfer)
         {
+            
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+
+                connection.Open();
+                string sqlTransfer = "INSERT INTO dbo.transfer (account_from, account_to, transfer_type_id, transfer_status_id, amount) " +
+                    "VALUES (@account_from, @account_to, @transfer_type_id, @transfer_status_id, @amount);";
+
+                SqlCommand command = connection.CreateCommand();
+
+                command.CommandText = sqlTransfer;
+                command.Parameters.AddWithValue("@account_from", transfer.AccountId);
+                command.Parameters.AddWithValue("@account_to", transfer.ReceiverAccountId);
+                command.Parameters.AddWithValue("@transfer_type_id", transfer.Type);
+                command.Parameters.AddWithValue("@transfer_status_id", transfer.Status);
+                command.Parameters.AddWithValue("@amount", transfer.AmountToTransfer);
+
+                command.ExecuteNonQuery();
+            }
             return false;
+
         }
-        //public decimal ReceiveTransfer()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public decimal SendTransfer()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         private Account GetAccountFromReader(SqlDataReader reader)
         {
             Account a = new Account()

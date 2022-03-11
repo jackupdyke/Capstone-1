@@ -93,6 +93,7 @@ namespace TenmoClient
             if (menuSelection == 3)
             {
                 // View your pending requests
+                GetPendingRequests();
             }
 
             if (menuSelection == 4)
@@ -104,6 +105,7 @@ namespace TenmoClient
             if (menuSelection == 5)
             {
                 // Request TE bucks
+                RequestTransfer();
             }
 
             if (menuSelection == 6)
@@ -169,6 +171,94 @@ namespace TenmoClient
             console.Pause();
         }
 
+        private void GetPendingRequests()
+        {
+            List<Transfer> transfers = tenmoApiService.GetTransfers(tenmoApiService.UserId);
+            Console.WriteLine("-------------------------------------------");
+            Console.WriteLine("Pending Transfers");
+            Console.WriteLine("ID          To                 Amount");
+            Console.WriteLine("-------------------------------------------");
+
+            
+
+            foreach (Transfer item in transfers)
+            {
+                string type = null;
+                string username = null;
+                if (item.SecondUserId == tenmoApiService.UserId && item.Status == 1)
+                {
+                    
+                    username = $"{item.UserNameFrom}";
+                    Console.WriteLine($"{item.TransferId} {type.PadLeft(14)} {username.PadRight(10)} {item.AmountToTransfer.ToString("c").PadLeft(10)} ");
+                }
+                
+            }
+            Console.WriteLine("---------");
+            Console.WriteLine("Please enter transfer ID to approve/reject (0 to cancel): ");
+            int transferId = Convert.ToInt32(Console.ReadLine());
+            
+        }
+        private void RequestTransfer()
+        {
+            List<ApiUser> users = tenmoApiService.GetUsers();
+
+            Console.WriteLine("|-------------- Users --------------|");
+            Console.WriteLine("|    Id | Username                  |");
+            Console.WriteLine("|-------+---------------------------|");
+            foreach (ApiUser item in users)
+            {
+                if (item.UserId != tenmoApiService.UserId)
+                {
+                    Console.WriteLine($"|{item.UserId}   | {item.Username.PadRight(26)}|");
+                }
+            }
+            Console.WriteLine("|-----------------------------------|");
+            Console.Write("Id of the user you are requesting from[0]: ");
+
+            int requestUserId = 0;
+
+
+            while (true)
+            {
+                requestUserId = int.Parse(Console.ReadLine());
+                if (requestUserId == tenmoApiService.UserId)
+                {
+                    Console.WriteLine("Cannot transfer request to your own account.");
+                    continue;
+                }
+                break;
+            }
+            //TODO check on sender balance
+            //TODO make zero exit on current menu
+            //TODO check amountToTransfer is not blank
+            decimal amountToTransfer = 0;
+            while (true)
+            {
+                Console.Write("Enter amount to request: ");
+                amountToTransfer = decimal.Parse(Console.ReadLine());
+                if (amountToTransfer <= 0)
+                {
+                    Console.WriteLine("Please enter a value greater than zero.");
+                    continue;
+                }
+                break;
+            }
+            Transfer transfer = new Transfer();
+            transfer.AmountToTransfer = amountToTransfer;
+            transfer.SecondUserId = requestUserId;
+            transfer.CurrentUserId = tenmoApiService.UserId;
+            transfer.ReceiverAccountId = tenmoApiService.GetAccount(transfer.CurrentUserId).AccountId;
+            transfer.AccountId = tenmoApiService.GetAccount(transfer.SecondUserId).AccountId;
+            transfer.Status = 1;
+            transfer.Type = 1;
+            tenmoApiService.AddPendingTransfer(transfer);
+            
+            //TODO update transfer to take in accountID instead of UserId
+
+            Console.WriteLine("Transfer pending");
+            Console.WriteLine("Press enter to continue");
+            Console.ReadLine();
+        }
         private void Transfer()
         {
             List<ApiUser> users = tenmoApiService.GetUsers();
